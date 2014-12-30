@@ -17,11 +17,11 @@ bash "install_freegeoip" do
     export GOPATH=#{node[:freegeoip][:path]}
     mkdir -p #{node[:freegeoip][:path]}
     cd #{node[:freegeoip][:path]}
-    go get github.com/fiorix/freegeoip
-    go get github.com/fiorix/freegeoip/cmd/freegeoip
+    go get -u github.com/GUI/freegeoip
+    go get -u github.com/GUI/freegeoip/cmd/freegeoip
   EOS
   notifies :restart, "supervisor_service[freegeoip]"
-  not_if { File.exists?(File.join(node[:freegeoip][:path], "bin/freegeoip")) }
+  #not_if { File.exists?(File.join(node[:freegeoip][:path], "bin/freegeoip")) }
 end
 
 supervisor_service "freegeoip" do
