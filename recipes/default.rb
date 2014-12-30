@@ -18,9 +18,7 @@ bash "install_freegeoip" do
     mkdir -p #{node[:freegeoip][:path]}
     cd #{node[:freegeoip][:path]}
     go get github.com/fiorix/freegeoip
-    go get github.com/fiorix/go-redis/redis
-    go get github.com/gorilla/context
-    go install github.com/fiorix/freegeoip/cmd/freegeoip
+    go get github.com/fiorix/freegeoip/cmd/freegeoip
   EOS
   notifies :restart, "supervisor_service[freegeoip]"
   not_if { File.exists?(File.join(node[:freegeoip][:path], "bin/freegeoip")) }
