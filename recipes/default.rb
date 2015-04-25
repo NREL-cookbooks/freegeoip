@@ -7,25 +7,22 @@
 # All rights reserved - Do Not Redistribute
 #
 
-include_recipe "golang"
+include_recipe "ark"
 include_recipe "logrotate"
 include_recipe "supervisor"
 
-bash "install_freegeoip" do
-  code <<-EOS
-    export PATH=#{node[:go][:install_dir]}/go/bin:$PATH
-    export GOPATH=#{node[:freegeoip][:path]}
-    mkdir -p #{node[:freegeoip][:path]}
-    cd #{node[:freegeoip][:path]}
-    go get -u github.com/GUI/freegeoip
-    go get -u github.com/GUI/freegeoip/cmd/freegeoip
-  EOS
+ark "freegeoip" do
+  action :install
+  url node[:freegeoip][:download_url]
+  checksum node[:freegeoip][:download_checksum]
+  version node[:freegeoip][:version]
+  has_binaries ["freegeoip"]
+  notifies :start, "supervisor_service[freegeoip]"
   notifies :restart, "supervisor_service[freegeoip]"
-  #not_if { File.exists?(File.join(node[:freegeoip][:path], "bin/freegeoip")) }
 end
 
 supervisor_service "freegeoip" do
-  command "#{node[:freegeoip][:path]}/bin/freegeoip -addr='#{node[:freegeoip][:addr]}'"
+  command "#{node[:ark][:prefix_bin]}/freegeoip -addr='#{node[:freegeoip][:addr]}'"
   action :enable
   autostart true
   autorestart true
